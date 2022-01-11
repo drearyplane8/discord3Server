@@ -1,5 +1,6 @@
 package com.example.discord2server;
 
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -32,6 +33,7 @@ public class Discord2ServerController {
     public void initialize() {
 
         Globals.controller = this;
+        Globals.loader.mainstage.setOnCloseRequest(e -> OnClose(0));
 
         localIPText.setText("Local IP: " + GetLocalIPAddress());
         publicIPText.setText("Public IP: " + GetPublicIPAddress());
@@ -47,7 +49,9 @@ public class Discord2ServerController {
     }
 
     public void OnStartConnectionButtonPressed() {
+
         centreButton.setOnAction(e -> OnMainButtonPressedWhileConnectionRunning());
+        centreButton.setText("Running...");
 
         System.out.println("Attempting to start IncomingConnectionsHandler");
         //create a new thread running an IncomingConnectionsHandler.
@@ -67,7 +71,13 @@ public class Discord2ServerController {
 
         //show the alert box and store the result
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) startShutdownProcedures();
+        if (result.get() == ButtonType.OK) {
+            try {
+                Globals.loader.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         //otherwise just return
     }
 
@@ -94,13 +104,12 @@ public class Discord2ServerController {
         return "Error";
     }
 
-    public void startShutdownProcedures() {
-        //this isnt necessary per se, but spamming stderr on a standard shutdown is idk probably bad
+    public void OnClose(int exitCode) {
         if (incomingConnectionsHandler != null) {
             incomingConnectionsHandler.interrupt();
         }
-
-        Globals.loader.mainstage.close();
+        Platform.exit();
+        System.exit(exitCode);
     }
 
 

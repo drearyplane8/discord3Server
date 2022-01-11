@@ -1,6 +1,7 @@
 package com.example.discord2server;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -13,6 +14,10 @@ public class Discord2ServerLoader extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        Globals.loader = this;
+        this.mainstage = stage;
+
         FXMLLoader fxmlLoader = new FXMLLoader(Discord2ServerLoader.class.getResource("mainPage.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 480);
         stage.setTitle("Hello!");
@@ -20,13 +25,9 @@ public class Discord2ServerLoader extends Application {
         stage.setMaximized(true);
         stage.show();
 
-        this.mainstage = stage;
-        Globals.loader = this;
-    }
 
-    @Override
-    public void stop() throws Exception {
-        Globals.controller.startShutdownProcedures();
+
+
     }
 
     public static void main(String[] args) {

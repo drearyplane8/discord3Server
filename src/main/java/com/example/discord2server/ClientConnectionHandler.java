@@ -5,14 +5,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientConnectionHandler extends Thread
-{
+public class ClientConnectionHandler extends Thread {
 
     private final Socket socket;
     private final IncomingConnectionsHandler parent;
-
-    //create an object purely to act as an intrinsic lock for the purposes of the out writers statement
-    private Object lock;
 
     public Scanner in;
     public PrintWriter out;
@@ -31,20 +27,35 @@ public class ClientConnectionHandler extends Thread
     @Override
     public void run() {
         System.out.println("Connection opened with " + socket);
-        out.println("hello telnet!");
         while (in.hasNextLine() && !currentThread().isInterrupted()) {
             String incoming = in.nextLine();
-            if (incoming.equals("say hello to the clients")) {
-                parent.Broadcast("hello client!");
+            switch (incoming) {
+                case Discord2Protocol.CRED_REQUEST -> {
+                    //the client wants us to send the database credentials over
+
+                    //get the array of credentials properly formatted and everything
+                    String[] creds = Discord2Protocol.GetCredsToSend();
+                    for (String cred : creds) {
+                        //print each one followed by a newline
+                        out.println(cred);
+                    }
+                } //if a client is telling us we sent a message, tell all the other clients that they need
+                  //to check their inbox.
+                case Discord2Protocol.CLIENT_MESSAGE_SENT -> parent.Broadcast(Discord2Protocol.CLIENT_CHECK_MESSAGES);
+                default -> System.err.println("unexpected message received");
             }
         }
         System.out.println("Connection closed");
+        //close this thread
+        interrupt();
     }
 
     //make sure we close the socket before we kill this thread.
     @Override
     public void interrupt() {
+        System.out.println("Closing thread " + this);
         try {
+            System.out.println("Closing socket " + socket);
             socket.close();
         } catch (IOException ignored){}
         finally {

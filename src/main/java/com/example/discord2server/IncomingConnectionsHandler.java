@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class IncomingConnectionsHandler extends Thread{
+public class IncomingConnectionsHandler extends Thread {
 
     private final int port;
 
@@ -42,6 +42,7 @@ public class IncomingConnectionsHandler extends Thread{
 
     @Override
     public void interrupt() {
+        System.out.println("Closing IncomingConnectionsHandler " + this);
         //tell all the individual client connection handler threads to shut down
         for(var thread : clientThreads ){
             thread.interrupt();
