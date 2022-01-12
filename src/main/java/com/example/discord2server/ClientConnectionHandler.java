@@ -27,12 +27,13 @@ public class ClientConnectionHandler extends Thread {
     @Override
     public void run() {
         System.out.println("Connection opened with " + socket);
-        while (in.hasNextLine() && !currentThread().isInterrupted()) {
+        while (!socket.isClosed() && !currentThread().isInterrupted()) {
             String incoming = in.nextLine();
+            System.out.println("Incoming: " + incoming);
             switch (incoming) {
                 case Discord2Protocol.CRED_REQUEST -> {
                     //the client wants us to send the database credentials over
-
+                    System.out.println("got credential request");
                     //get the array of credentials properly formatted and everything
                     String[] creds = Discord2Protocol.GetCredsToSend();
                     for (String cred : creds) {
@@ -40,7 +41,7 @@ public class ClientConnectionHandler extends Thread {
                         out.println(cred);
                     }
                 } //if a client is telling us we sent a message, tell all the other clients that they need
-                  //to check their inbox.
+                //to check their inbox.
                 case Discord2Protocol.CLIENT_MESSAGE_SENT -> parent.Broadcast(Discord2Protocol.CLIENT_CHECK_MESSAGES);
                 default -> System.err.println("unexpected message received");
             }
@@ -57,8 +58,8 @@ public class ClientConnectionHandler extends Thread {
         try {
             System.out.println("Closing socket " + socket);
             socket.close();
-        } catch (IOException ignored){}
-        finally {
+        } catch (IOException ignored) {
+        } finally {
             super.interrupt();
         }
 
