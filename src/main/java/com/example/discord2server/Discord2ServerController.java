@@ -32,7 +32,6 @@ public class Discord2ServerController {
 
     public void initialize() {
 
-        Globals.controller = this;
         Globals.loader.mainstage.setOnCloseRequest(e -> OnClose(0));
 
         localIPText.setText("Local IP: " + GetLocalIPAddress());
@@ -55,7 +54,7 @@ public class Discord2ServerController {
 
         System.out.println("Attempting to start IncomingConnectionsHandler");
         //create a new thread running an IncomingConnectionsHandler.
-        //pass the value of the portField to the constructor of the IncomingConncetionsHandler
+        //pass the value of the portField to the constructor of the IncomingConnectionsHandler
         //so it knows what port to set up in.
         //no error handling is needed - the text formatter ensures there can only be an integer in this field
         //and amazingly java recognises that. complements to the JVM
@@ -73,12 +72,12 @@ public class Discord2ServerController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             try {
-                Globals.loader.stop();
+                OnClose(0);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        //otherwise just return
+        //otherwise, just return
     }
 
 
