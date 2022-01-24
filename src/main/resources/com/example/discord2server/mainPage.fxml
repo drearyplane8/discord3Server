@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.discord2server.Discord2ServerController">
 
@@ -25,10 +22,20 @@
 
     <center>
         <VBox alignment="CENTER">
-            <HBox alignment="CENTER">
-                <Text text="Port: "/>
-                <TextField fx:id="portField"/>
-            </HBox>
+            <GridPane alignment="CENTER">
+                <Text text="Database URL: " GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="dbURL" promptText="Database URL" prefWidth="200" maxWidth="200" GridPane.rowIndex="0" GridPane.columnIndex="1" text="jdbc:mysql://localhost:3306/discord2db"/>
+
+                <Text text="Database Username: " GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="dbUN" promptText="Database Username" prefWidth="200" maxWidth="200" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Text text="Database Password: " GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <PasswordField fx:id="dbPWD" promptText="Database Password" prefWidth="200" maxWidth="200" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Text text="TCP Port" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField text="portField: " fx:id="portField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </GridPane>
+
             <Button text="Start" fx:id="centreButton" onAction="#OnStartConnectionButtonPressed"/>
         </VBox>
     </center>

@@ -11,6 +11,9 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -25,6 +28,10 @@ public class Discord2ServerController {
     public TextField portField;
     public Text connectedClientsTitleText;
     public VBox connectedClientsVBox;
+
+    public TextField dbURL;
+    public PasswordField dbPWD;
+    public TextField dbUN;
 
     //keep a reference to this, so we can shut it down when we close the GUI and therefore the main thread.
     private IncomingConnectionsHandler incomingConnectionsHandler;
@@ -49,6 +56,17 @@ public class Discord2ServerController {
 
     public void OnStartConnectionButtonPressed() {
 
+        //verify if the whole database credentials are correct.
+        try (Connection ignored = DriverManager.getConnection(dbURL.getText(), dbUN.getText(), dbPWD.getText())) {
+            Globals.URL = dbURL.getText();
+            Globals.USERNAME = dbUN.getText();
+            Globals.PASSWORD = dbPWD.getText();
+        } catch (SQLException e) {
+            Globals.ShowErrorBox("SQL Credentials invalid", "These SQL credentials do not point to a valid database",
+                    "Make sure there is a MySQL database set up.");
+            return;
+        }
+
         centreButton.setOnAction(e -> OnMainButtonPressedWhileConnectionRunning());
         centreButton.setText("Running...");
 
@@ -56,8 +74,6 @@ public class Discord2ServerController {
         //create a new thread running an IncomingConnectionsHandler.
         //pass the value of the portField to the constructor of the IncomingConnectionsHandler
         //so it knows what port to set up in.
-        //no error handling is needed - the text formatter ensures there can only be an integer in this field
-        //and amazingly java recognises that. complements to the JVM
         incomingConnectionsHandler = new IncomingConnectionsHandler(Integer.parseInt(portField.getText()));
         new Thread(incomingConnectionsHandler).start();
     }
@@ -74,7 +90,7 @@ public class Discord2ServerController {
             try {
                 OnClose(0);
             } catch (Exception e) {
-                e.printStackTrace();
+                Globals.ShowErrorBox("Unexpected Error", "An unexpected error has occurred", "");
             }
         }
         //otherwise, just return
@@ -85,9 +101,8 @@ public class Discord2ServerController {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
-            System.err.println("Failed to get local IP\n" + e);
+            return "Failed to get local IP";
         }
-        return "Error";
     }
 
     private String GetPublicIPAddress() {
@@ -98,9 +113,8 @@ public class Discord2ServerController {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             return reader.readLine().trim();
         } catch (Exception e) {
-            e.printStackTrace();
+            return "Failed to get public IP.";
         }
-        return "Error";
     }
 
     public void OnClose(int exitCode) {
@@ -110,6 +124,7 @@ public class Discord2ServerController {
         Platform.exit();
         System.exit(exitCode);
     }
+
 
 
 }

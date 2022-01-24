@@ -20,7 +20,7 @@ public class Discord2ServerLoader extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(Discord2ServerLoader.class.getResource("mainPage.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 480);
-        stage.setTitle("Hello!");
+        stage.setTitle("Discord2 Server");
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();

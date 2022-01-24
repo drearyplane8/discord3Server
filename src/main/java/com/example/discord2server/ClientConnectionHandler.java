@@ -38,6 +38,7 @@ public class ClientConnectionHandler extends Thread {
                     String[] creds = Discord2Protocol.GetCredsToSend();
                     for (String cred : creds) {
                         //print each one followed by a newline
+                        System.out.println("sending " + cred);
                         out.println(cred);
                     }
                 } //if a client is telling us we sent a message, tell all the other clients that they need

@@ -32,11 +32,14 @@ public class IncomingConnectionsHandler extends Thread {
                 try {
                     pool.execute(new ClientConnectionHandler(listener.accept(), this));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Globals.ShowErrorBoxNonBlocking("Client failed to connect.", "An error occurred while" +
+                            "trying to set up a TCP connection with a client.", "This is most likely the client's" +
+                            "issue.");
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Globals.ShowErrorBoxNonBlocking("Server error", "The program failed to set up the ServerSocket",
+                    "Check your firewall and internet connection.");
         }
     }
 
